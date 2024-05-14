@@ -1,11 +1,24 @@
+using CapitalPlacement.Data;
+using CapitalPlacement.Repositories;
+using CapitalPlacement.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<CosmosDbService>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new CosmosDbService(configuration);
+});
+
+builder.Services.AddScoped<IApplicationFormRepository, ApplicationFormRepository>();
+builder.Services.AddScoped<IFormCreatorService, FormCreatorService>();
+builder.Services.AddScoped<IFormSubmissionService, FormSubmissionService>();
+builder.Services.AddSingleton<IExceptionHandler, DefaultExceptionHandler>();
 
 var app = builder.Build();
 
